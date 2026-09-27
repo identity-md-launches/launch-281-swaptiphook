@@ -1,0 +1,28 @@
+{
+  "kind": "univ4_hook",
+  "hook": {
+    "contract": "SwapTipHook",
+    "constructorArgs": [
+      "0xE03A1074c86CFeDd5C142C4F04F1a1536e203543"
+    ],
+    "permissions": [
+      "beforeSwap",
+      "afterSwap",
+      "beforeSwapReturnDelta",
+      "afterSwapReturnDelta"
+    ]
+  },
+  "token": {
+    "contract": "STIP",
+    "name": "Swap Tip",
+    "symbol": "STIP",
+    "decimals": 18
+  },
+  "pool": {
+    "pairedCurrency": "0x0000000000000000000000000000000000000000",
+    "fee": 3000,
+    "tickSpacing": 60,
+    "initialPrice": "791647387308859959733601586197955"
+  },
+  "notes": "SwapTipHook (src/SwapTipHook.sol) takes one IPoolManager argument, the approved Sepolia PoolManager. STIP (src/STIP.sol) has no constructor arguments. ABIs are documented in docs/abi/SwapTipHook.json and docs/abi/STIP.json. The pool has native ETH as currency0 and STIP as currency1; initialPrice is decimal sqrtPriceX96 at tick 184200, adopting the price exercised by test/LaunchRehearsal.t.sol and recorded in docs/rehearsal.json. That local fixture seeds one-sided STIP liquidity and exercises the first buy into an ETH-empty pool. Hook address permission bits are 0x00cc; all unlisted permissions are false. The constructor validates those bits, so deployment requires a matching CREATE2 address. Swap callbacks and unlockCallback require the PoolManager. Optional tips use exactly 64 bytes of hookData encoding a rate and recipient. Rates 1-500 bps credit a valid recipient; rates above 500 revert before recipient validation. Other lengths, zero rates, oversized recipient words, and zero, hook or PoolManager recipients charge no tip. ETH-specified swaps charge a positive specified delta in beforeSwap; ETH-unspecified swaps charge a positive unspecified delta in afterSwap. Fees round down and zero fees create no credit. Native-ETH pool partial fills revert. Pools whose currency0 is not native ETH receive zero deltas and no accounting effects. Tips are held as PoolManager ERC-6909 ETH claims; claim() clears the caller's balance before burning claims and taking ETH through unlockCallback. totalTipped is keyed by PoolId; balanceOf, tippedBy and receivedBy aggregate by address. tx.origin labels the tipper for display only, and hookData is unauthenticated. REVIEW.md records a requirement conflict: unsolicited ERC-6909 ETH claims can exceed recipient liabilities, so universal equality is not enforced. This technical manifest adopts the local rehearsal price; it does not assert independent review, production-factory verification, attestation, admission or deployment. Launch policy and signed artifact linkage are handled separately by services."
+}
